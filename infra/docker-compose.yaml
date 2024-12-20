@@ -3,19 +3,20 @@ networks:
 
 volumes:
   loki:
-  applicationLogs:
   grafana:
 
 services:
   potato:
     image: "potato:latest"
     container_name: "potato_app"
+    env_file:
+      - ./env/potato.env
     depends_on:
       - loki
       - promtail
       - traefik
     volumes:
-      - applicationLogs:/app/logs
+      - ./data/potato/logs:/var/log/potato:rw
     networks:
       - potato
 
@@ -32,10 +33,10 @@ services:
       - potato
 
   loki:
-    image: grafana/loki:2.9.2
+    image: grafana/loki:3.3.2
     container_name: "potato_loki"
-    user: root
     command: -config.file=/etc/loki/local-config.yaml
+    user: root
     volumes:
       - ./config/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
       - loki:/data
@@ -48,7 +49,7 @@ services:
     depends_on:
       - loki
     volumes:
-      - applicationLogs:/var/log/app:ro
+      - ./data/potato/logs:/var/log/potato:ro
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
