@@ -29,22 +29,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-//app.Map("/app", cfg =>
-//{
-//    cfg.UseRouting();
-//    cfg.UseForwardedHeaders();
-//    cfg.UseHttpsRedirection();
-
-//    cfg.UseStaticFiles();
-//    cfg.UseAntiforgery();
-
-//    cfg.UseEndpoints(endPoints =>
-//    {
-//        endPoints.MapRazorComponents<App>()
-//            .AddInteractiveServerRenderMode();
-//    });
-//});
-
 app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 
