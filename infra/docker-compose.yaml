@@ -4,8 +4,20 @@ networks:
 volumes:
   loki:
   applicationLogs:
+  grafana:
 
 services:
+  traefik:
+    image: "traefik:v3.2"
+    container_name: "potato_traefik"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - ./config/traefik:/etc/traefik/:ro
+    networks:
+      - logging
+
   loki:
     image: grafana/loki:2.9.2
     container_name: "potato_loki"
@@ -48,5 +60,7 @@ services:
       - "3000:3000"
     volumes:
       - ./config/grafana/ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml:ro
+      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana:/var/lib/grafana
     networks:
       - logging
