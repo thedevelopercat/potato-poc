@@ -1,9 +1,5 @@
 networks:
-  logging:
-    driver: bridge
-  proxy:
-    driver: bridge
-  external:
+  potato:
 
 volumes:
   loki:
@@ -21,7 +17,7 @@ services:
     volumes:
       - applicationLogs:/app/logs
     networks:
-      - proxy
+      - potato
 
   traefik:
     image: "traefik:v3.2"
@@ -33,8 +29,7 @@ services:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
     networks:
-      - external
-      - proxy
+      - potato
 
   loki:
     image: grafana/loki:2.9.2
@@ -45,8 +40,7 @@ services:
       - ./config/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
       - loki:/data
     networks:
-      - logging
-      - proxy
+      - potato
 
   promtail:
     image: grafana/promtail:2.9.2
@@ -58,7 +52,7 @@ services:
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - logging
+      - potato
 
   grafana:
     image: grafana/grafana:11.4.0
@@ -78,5 +72,4 @@ services:
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
     networks:
-      - logging
-      - proxy
+      - potato

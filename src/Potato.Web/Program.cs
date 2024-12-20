@@ -39,3 +39,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();
+await Log.CloseAndFlushAsync();
