@@ -1,5 +1,6 @@
 networks:
   logging:
+  proxy:
 
 volumes:
   loki:
@@ -7,6 +8,18 @@ volumes:
   grafana:
 
 services:
+  potato:
+    image: "potato:latest"
+    container_name: "potato_app"
+    depends_on:
+      - loki
+      - promtail
+    volumes:
+      - applicationLogs:/app/logs
+    networks:
+      - logging
+      - proxy
+
   traefik:
     image: "traefik:v3.2"
     container_name: "potato_traefik"
@@ -14,22 +27,22 @@ services:
       - "80:80"
       - "8080:8080"
     volumes:
-      - ./config/traefik:/etc/traefik/:ro
+      - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
     networks:
-      - logging
+      - proxy
 
   loki:
     image: grafana/loki:2.9.2
     container_name: "potato_loki"
-    ports:
-      - "3100:3100"
+    user: root
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./config/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
       - loki:/data
-    user: root
     networks:
       - logging
+      - proxy
 
   promtail:
     image: grafana/promtail:2.9.2
@@ -37,7 +50,7 @@ services:
     depends_on:
       - loki
     volumes:
-      - applicationLogs:/var/log/app
+      - applicationLogs:/var/log/app:ro
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
@@ -56,11 +69,10 @@ services:
       - sh
       - -euc
       - /run.sh
-    ports:
-      - "3000:3000"
     volumes:
       - ./config/grafana/ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml:ro
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
     networks:
       - logging
+      - proxy

@@ -11,8 +11,11 @@
 @code {
     private int currentCount = 0;
 
+    [Inject] private ILogger<Counter> Logger { get; set; } = null!;
+
     private void IncrementCount()
     {
         currentCount++;
+        Logger.LogInformation("Counter incremented to @{count}", currentCount);
     }
 }

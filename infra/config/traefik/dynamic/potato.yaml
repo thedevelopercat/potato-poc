@@ -1,0 +1,22 @@
+http:
+  routers:
+    potatoRouter:
+      entryPoints:
+        - web
+      rule: "PathPrefix(`/`)"
+      service: potatoService
+      priority:
+      # middlewares:
+      #   - stripAppPrefix
+
+  # middlewares:
+  #   stripAppPrefix:
+  #     stripPrefix:
+  #       prefixes:
+  #         - "/app"
+
+  services:
+    potatoService:
+      loadBalancer:
+        servers:
+          - url: "http://potato:8080"
