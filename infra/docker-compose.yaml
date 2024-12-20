@@ -4,13 +4,15 @@ networks:
 volumes:
   loki:
   grafana:
+  pgsql:
 
 services:
   potato:
     image: "potato:latest"
     container_name: "potato_app"
     env_file:
-      - ./env/potato.env
+      - ./env/potato/potato.env
+      - ./env/potato/potato.override.env
     depends_on:
       - loki
       - promtail
@@ -50,6 +52,7 @@ services:
       - loki
     volumes:
       - ./data/potato/logs:/var/log/potato:ro
+      - ./data/pgsql/logs:/var/log/pgsql:ro
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
@@ -72,5 +75,17 @@ services:
       - ./config/grafana/ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml:ro
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
+    networks:
+      - potato
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: "potato_pgsql"
+    env_file:
+      - ./env/pgsql/pgsql.env
+      - ./env/pgsql/pgsql.override.env
+    volumes:
+      - pgsql:/var/lib/postgresql/data
+      - ./data/pgsql/logs:/var/log/postgresql/
     networks:
       - potato
