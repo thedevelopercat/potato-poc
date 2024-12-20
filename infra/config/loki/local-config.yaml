@@ -1,5 +1,10 @@
 auth_enabled: false
 
+ingester:
+  wal:
+    enabled: true
+    dir: /loki/wal
+
 server:
   http_listen_port: 3100
   grpc_listen_port: 9096
