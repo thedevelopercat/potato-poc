@@ -19,3 +19,10 @@ scrape_configs:
           job: potatoApp
           host: container
           __path__: /var/log/potato/*.json
+
+      - targets:
+          - potato_pgsql
+        labels:
+          job: potatoPgsql
+          host: container
+          __path__: /var/log/pgsql/*.log
