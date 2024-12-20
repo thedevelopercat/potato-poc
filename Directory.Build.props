@@ -18,7 +18,7 @@
 
     <!--Code analysis-->
     <PropertyGroup>
-        <ErrorLog>$(SolutionDir)\.sarif\$(MSBuildProjectName).json</ErrorLog>
+        <ErrorLog>$(SolutionDir)\.msbuild\$(MSBuildProjectName).json</ErrorLog>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
