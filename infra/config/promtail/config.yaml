@@ -9,17 +9,6 @@ client:
   url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: system
-    pipeline_stages:
-      - docker:
-    static_configs:
-      - targets:
-          - varlogs
-        labels:
-          job: varlogs
-          host: localhost
-          __path__: /var/log/*.log
-
   - job_name: potatoLogsJob
     pipeline_stages:
       - docker:
@@ -27,6 +16,6 @@ scrape_configs:
       - targets:
           - potato
         labels:
-          job: application
-          host: localhost
-          __path__: /var/log/app/*.json
+          job: potatoApp
+          host: container
+          __path__: /var/log/potato/*.json
