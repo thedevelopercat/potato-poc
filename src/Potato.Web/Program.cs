@@ -4,6 +4,13 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.Sources.Clear();
+builder.Configuration
+    .AddJsonFile("appsettings.json", false)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
+    .AddUserSecrets(typeof(Program).Assembly)
+    .AddEnvironmentVariables();
+
 builder.Services.AddSerilog(cfg =>
 {
     cfg.ReadFrom.Configuration(builder.Configuration);
@@ -38,5 +45,4 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-await app.RunAsync();
-await Log.CloseAndFlushAsync();
+await app.RunAsync().ConfigureAwait(false);
