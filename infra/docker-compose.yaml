@@ -17,10 +17,10 @@ services:
     depends_on:
       - loki
       - promtail
+      - traefik
     volumes:
       - applicationLogs:/app/logs
     networks:
-      - logging
       - proxy
 
   traefik:
