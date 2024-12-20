@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Potato.Infra.Persistence.Extensions;
 using Potato.Web.Components;
 using Serilog;
 
@@ -25,6 +26,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddPostgresSql(builder.Configuration);
 
 var app = builder.Build();
 
