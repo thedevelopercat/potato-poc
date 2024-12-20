@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /.sarif
 /.msbuild
+infra/env/pgsql.override.env
+infra/env/pgsql/pgsql.override.env
+infra/env/potato/potato.override.env
