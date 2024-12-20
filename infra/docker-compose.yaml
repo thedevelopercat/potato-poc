@@ -1,6 +1,9 @@
 networks:
   logging:
+    driver: bridge
   proxy:
+    driver: bridge
+  external:
 
 volumes:
   loki:
@@ -30,6 +33,7 @@ services:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
     networks:
+      - external
       - proxy
 
   loki:
