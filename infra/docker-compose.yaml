@@ -5,6 +5,7 @@ volumes:
   loki:
   grafana:
   pgsql:
+  pgsql_dumps:
   app:
 
 services:
@@ -82,13 +83,16 @@ services:
     image: postgres:17-alpine
     container_name: "potato_pgsql"
     labels:
-      - docker-volume-backup.stop-during-backup=pgsql_database
+      - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
+      - docker-volume-backup.exec-label=pgsql_database
     env_file:
       - ./env/pgsql/pgsql.env
       - ./env/pgsql/pgsql.override.env
     volumes:
       - pgsql:/var/lib/postgresql/data
-      - ./data/pgsql/logs:/var/log/postgresql/
+      - pgsql_dumps:/tmp/pgsql_dumps
+      - ./data/pgsql/logs:/var/log/postgresql/:rw
+      - ./env/pgsql/scripts:/tmp/scripts
     networks:
       - potato
   
@@ -101,7 +105,7 @@ services:
       - ./env/offen/offen.override.env
     volumes:
       # volumes to back up
-      - pgsql:/backup/pgsql:ro
+      - pgsql_dumps:/backup/pgsql_dumps:ro
       - grafana:/backup/grafana:ro
       - loki:/backup/loki:ro
       - app:/backup/app:ro
