@@ -34,6 +34,7 @@ services:
     volumes:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./data/traefik/logs:/var/log/traefik:rw
     networks:
       - stack
 
@@ -54,9 +55,12 @@ services:
     depends_on:
       - loki
     volumes:
+      # configuration mapping
+      - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
+      # log file(s) ingestion
       - ./data/${APP_NAME}/logs:/var/log/${APP_NAME}:ro
       - ./data/pgsql/logs:/var/log/pgsql:ro
-      - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
+      - ./data/traefik/logs:/var/log/traefik:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
       - stack
@@ -84,6 +88,7 @@ services:
   pgsql:
     image: postgres:17-alpine
     container_name: "${PREFIX?error}pgsql"
+    command: postgres -c logging_collector=on -c log_directory=pg_log -c log_statement=all
     labels:
       - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
       - docker-volume-backup.exec-label=pgsql_database
@@ -91,10 +96,13 @@ services:
       - ./env/pgsql/pgsql.env
       - ./env/pgsql/pgsql.override.env
     volumes:
+      # data persistence
       - pgsql:/var/lib/postgresql/data
       - pgsql_dumps:/tmp/pgsql_dumps
-      - ./data/pgsql/logs:/var/log/postgresql/:rw
-      - ./config/pgsql/scripts:/tmp/scripts
+      # logs
+      - ./data/pgsql/logs:/var/lib/postgresql/data/pg_log:rw
+      # scripts
+      - ./config/pgsql/scripts:/tmp/scripts:ro
     networks:
       - stack
   
@@ -125,3 +133,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - stack
+  
+  # add CAdvisor
+  # add Zabbix

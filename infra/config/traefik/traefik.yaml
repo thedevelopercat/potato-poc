@@ -1,3 +1,7 @@
+log:
+  filePath: "/var/log/traefik/traefik.log"
+  level: INFO
+
 api:
   insecure: true
   dashboard: false

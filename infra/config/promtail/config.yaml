@@ -14,15 +14,22 @@ scrape_configs:
       - docker:
     static_configs:
       - targets:
-          - potato
+          - application
         labels:
-          job: potatoApp
+          job: application
           host: container
           __path__: /var/log/potato/*.json
 
       - targets:
-          - potato_pgsql
+          - traefik
         labels:
-          job: potatoPgsql
+          job: traefik
+          host: container
+          __path__: /var/log/traefik/*.log
+
+      - targets:
+          - pgsql
+        labels:
+          job: pgsql
           host: container
           __path__: /var/log/pgsql/*.log
