@@ -19,4 +19,4 @@ http:
     potatoService:
       loadBalancer:
         servers:
-          - url: "http://potato:8080"
+          - url: "http://application:8080"

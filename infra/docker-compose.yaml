@@ -9,7 +9,7 @@ volumes:
   app:
 
 services:
-  potato:
+  application:
     image: "potato:latest"
     container_name: "potato_app"
     env_file:
@@ -19,6 +19,7 @@ services:
       - loki
       - promtail
       - traefik
+      - pgsql
     volumes:
       - ./data/potato/logs:/var/log/potato:rw
     networks:
@@ -79,7 +80,7 @@ services:
     networks:
       - potato
 
-  postgres:
+  pgsql:
     image: postgres:17-alpine
     container_name: "potato_pgsql"
     labels:
@@ -92,7 +93,7 @@ services:
       - pgsql:/var/lib/postgresql/data
       - pgsql_dumps:/tmp/pgsql_dumps
       - ./data/pgsql/logs:/var/log/postgresql/:rw
-      - ./env/pgsql/scripts:/tmp/scripts
+      - ./config/pgsql/scripts:/tmp/scripts
     networks:
       - potato
   
@@ -100,6 +101,11 @@ services:
     image: offen/docker-volume-backup:v2.43.0
     container_name: "potato_offen"
     restart: always
+    depends_on:
+      - pgsql
+      - grafana
+      - loki
+      - application
     env_file:
       - ./env/offen/offen.env
       - ./env/offen/offen.override.env
