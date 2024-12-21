@@ -5,6 +5,7 @@ volumes:
   loki:
   grafana:
   pgsql:
+  app:
 
 services:
   potato:
@@ -27,7 +28,6 @@ services:
     container_name: "potato_traefik"
     ports:
       - "80:80"
-      - "8080:8080"
     volumes:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
@@ -81,11 +81,36 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: "potato_pgsql"
+    labels:
+      - docker-volume-backup.stop-during-backup=pgsql_database
     env_file:
       - ./env/pgsql/pgsql.env
       - ./env/pgsql/pgsql.override.env
     volumes:
       - pgsql:/var/lib/postgresql/data
       - ./data/pgsql/logs:/var/log/postgresql/
+    networks:
+      - potato
+  
+  backup:
+    image: offen/docker-volume-backup:v2.43.0
+    container_name: "potato_offen"
+    restart: always
+    env_file:
+      - ./env/offen/offen.env
+      - ./env/offen/offen.override.env
+    volumes:
+      # volumes to back up
+      - pgsql:/backup/pgsql:ro
+      - grafana:/backup/grafana:ro
+      - loki:/backup/loki:ro
+      - app:/backup/app:ro
+      # configuration
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/offen/backup:/archive:rw
+      - ./config/offen:/etc/dockervolumebackup/conf.d:ro
+      # timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - potato
