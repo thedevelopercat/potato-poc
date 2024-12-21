@@ -11,18 +11,18 @@ volumes:
 
 services:
   application:
-    image: "potato:latest"
+    image: "${APP_NAME}:latest"
     container_name: "${PREFIX?error}app"
     env_file:
-      - ./env/potato/potato.env
-      - ./env/potato/potato.override.env
+      - ./env/${APP_NAME}/${APP_NAME}.env
+      - ./env/${APP_NAME}/${APP_NAME}.override.env
     depends_on:
       - loki
       - promtail
       - traefik
       - pgsql
     volumes:
-      - ./data/potato/logs:/var/log/potato:rw
+      - ./data/${APP_NAME}/logs:/var/log/${APP_NAME}:rw
     networks:
       - stack
 
@@ -54,7 +54,7 @@ services:
     depends_on:
       - loki
     volumes:
-      - ./data/potato/logs:/var/log/potato:ro
+      - ./data/${APP_NAME}/logs:/var/log/${APP_NAME}:ro
       - ./data/pgsql/logs:/var/log/pgsql:ro
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
