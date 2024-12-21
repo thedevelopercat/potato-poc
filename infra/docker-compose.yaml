@@ -1,5 +1,6 @@
 networks:
-  potato:
+  stack:
+    name: ${PREFIX?error}_vnet
 
 volumes:
   loki:
@@ -11,7 +12,7 @@ volumes:
 services:
   application:
     image: "potato:latest"
-    container_name: "potato_app"
+    container_name: "${PREFIX?error}_app"
     env_file:
       - ./env/potato/potato.env
       - ./env/potato/potato.override.env
@@ -23,33 +24,33 @@ services:
     volumes:
       - ./data/potato/logs:/var/log/potato:rw
     networks:
-      - potato
+      - stack
 
   traefik:
     image: "traefik:v3.2"
-    container_name: "potato_traefik"
+    container_name: "${PREFIX?error}_traefik"
     ports:
       - "80:80"
     volumes:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
     networks:
-      - potato
+      - stack
 
   loki:
     image: grafana/loki:3.3.2
-    container_name: "potato_loki"
+    container_name: "${PREFIX?error}_loki"
     command: -config.file=/etc/loki/local-config.yaml
     user: root
     volumes:
       - ./config/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
       - loki:/data
     networks:
-      - potato
+      - stack
 
   promtail:
     image: grafana/promtail:2.9.2
-    container_name: "potato_promtail"
+    container_name: "${PREFIX?error}_promtail"
     depends_on:
       - loki
     volumes:
@@ -58,11 +59,11 @@ services:
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - potato
+      - stack
 
   grafana:
     image: grafana/grafana:11.4.0
-    container_name: "potato_grafana"
+    container_name: "${PREFIX?error}_grafana"
     depends_on:
       - loki
     environment:
@@ -78,11 +79,11 @@ services:
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
     networks:
-      - potato
+      - stack
 
   pgsql:
     image: postgres:17-alpine
-    container_name: "potato_pgsql"
+    container_name: "${PREFIX?error}_pgsql"
     labels:
       - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
       - docker-volume-backup.exec-label=pgsql_database
@@ -95,11 +96,11 @@ services:
       - ./data/pgsql/logs:/var/log/postgresql/:rw
       - ./config/pgsql/scripts:/tmp/scripts
     networks:
-      - potato
+      - stack
   
   backup:
     image: offen/docker-volume-backup:v2.43.0
-    container_name: "potato_offen"
+    container_name: "${PREFIX?error}_offen"
     restart: always
     depends_on:
       - pgsql
@@ -123,4 +124,4 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - potato
+      - stack
