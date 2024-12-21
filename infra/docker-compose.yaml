@@ -98,7 +98,7 @@ services:
     networks:
       - stack
   
-  backup:
+  offen:
     image: offen/docker-volume-backup:v2.43.0
     container_name: "${PREFIX?error}_offen"
     restart: always
