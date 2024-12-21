@@ -12,7 +12,7 @@ volumes:
 services:
   application:
     image: "potato:latest"
-    container_name: "${PREFIX?error}_app"
+    container_name: "${PREFIX?error}app"
     env_file:
       - ./env/potato/potato.env
       - ./env/potato/potato.override.env
@@ -28,7 +28,7 @@ services:
 
   traefik:
     image: "traefik:v3.2"
-    container_name: "${PREFIX?error}_traefik"
+    container_name: "${PREFIX?error}traefik"
     ports:
       - "80:80"
     volumes:
@@ -39,7 +39,7 @@ services:
 
   loki:
     image: grafana/loki:3.3.2
-    container_name: "${PREFIX?error}_loki"
+    container_name: "${PREFIX?error}loki"
     command: -config.file=/etc/loki/local-config.yaml
     user: root
     volumes:
@@ -50,7 +50,7 @@ services:
 
   promtail:
     image: grafana/promtail:2.9.2
-    container_name: "${PREFIX?error}_promtail"
+    container_name: "${PREFIX?error}promtail"
     depends_on:
       - loki
     volumes:
@@ -63,7 +63,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.4.0
-    container_name: "${PREFIX?error}_grafana"
+    container_name: "${PREFIX?error}grafana"
     depends_on:
       - loki
     environment:
@@ -83,7 +83,7 @@ services:
 
   pgsql:
     image: postgres:17-alpine
-    container_name: "${PREFIX?error}_pgsql"
+    container_name: "${PREFIX?error}pgsql"
     labels:
       - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
       - docker-volume-backup.exec-label=pgsql_database
@@ -100,7 +100,7 @@ services:
   
   offen:
     image: offen/docker-volume-backup:v2.43.0
-    container_name: "${PREFIX?error}_offen"
+    container_name: "${PREFIX?error}offen"
     restart: always
     depends_on:
       - pgsql
