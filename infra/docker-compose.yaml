@@ -17,6 +17,7 @@ services:
     container_name: "${PREFIX?error}app"
     restart: unless-stopped
     env_file:
+      - ./env/pgsql/pgsql.shared.env
       - ./env/${APP_NAME}/${APP_NAME}.env
       - ./env/${APP_NAME}/${APP_NAME}.override.env
     depends_on:
@@ -106,7 +107,7 @@ services:
       - docker-volume-backup.exec-label=pgsql_database
     env_file:
       - ./env/pgsql/pgsql.env
-      - ./env/pgsql/pgsql.override.env
+      - ./env/pgsql/pgsql.shared.env
     volumes:
       # data persistence
       - pgsql:/var/lib/postgresql/data
