@@ -369,3 +369,4 @@ infra/env/potato/potato.override.env
 infra/env/offen/offen.override.env
 infra/env/pgsql_exporter/exporter.override.env
 infra/env/pgsql/pgsql.shared.env
+infra/env/pgqsl_exporter/exporter.override.env
