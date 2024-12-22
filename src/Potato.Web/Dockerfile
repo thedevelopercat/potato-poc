@@ -12,10 +12,12 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Potato.Web.csproj", "."]
-RUN dotnet restore "./Potato.Web.csproj"
+COPY ["Potato.Web/Potato.Web.csproj", "Potato.Web/"]
+COPY ["Potato.Infra/Potato.Infra.Persistence/Potato.Infra.Persistence.csproj", "Potato.Infra/Potato.Infra.Persistence/"]
+COPY ["Potato.Domain/Potato.Domain.csproj", "Potato.Domain/"]
+RUN dotnet restore "./Potato.Web/Potato.Web.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/Potato.Web"
 RUN dotnet build "./Potato.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

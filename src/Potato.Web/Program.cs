@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Potato.Infra.Persistence.Extensions;
 using Potato.Web.Components;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// configuration
 builder.Configuration.Sources.Clear();
 builder.Configuration
     .AddJsonFile("appsettings.json", false)
@@ -12,22 +16,63 @@ builder.Configuration
     .AddUserSecrets(typeof(Program).Assembly)
     .AddEnvironmentVariables();
 
+// logging
 builder.Services.AddSerilog(cfg =>
 {
     cfg.ReadFrom.Configuration(builder.Configuration);
 });
 
+// telemetry
+var tracingOtlpEndpoint = builder.Configuration["OTLP_ENDPOINT_URL"];
+var otel = builder.Services.AddOpenTelemetry();
+
+// Configure OpenTelemetry Resources with the application name
+otel.ConfigureResource(resource => resource
+    .AddService(serviceName: builder.Environment.ApplicationName));
+
+// Add Metrics for ASP.NET Core and our custom metrics and export to Prometheus
+otel.WithMetrics(metrics => metrics
+    // Metrics provider from OpenTelemetry
+    .AddConsoleExporter()
+    .AddAspNetCoreInstrumentation()
+    .AddHttpClientInstrumentation()
+    .AddAspNetCoreInstrumentation()
+    .AddPrometheusExporter()
+);
+
+// Add Tracing for ASP.NET Core and our custom ActivitySource and export to Jaeger
+otel.WithTracing(tracing =>
+{
+    tracing.AddAspNetCoreInstrumentation();
+    tracing.AddHttpClientInstrumentation();
+    tracing.AddEntityFrameworkCoreInstrumentation();
+
+    if (tracingOtlpEndpoint != null)
+    {
+        tracing.AddOtlpExporter(otlpOptions =>
+        {
+            otlpOptions.Endpoint = new Uri(tracingOtlpEndpoint);
+        });
+    }
+    else
+    {
+        tracing.AddConsoleExporter();
+    }
+});
+
+// reverse proxy awareness
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-// Add services to the container.
+// database
+builder.Services.AddPostgresSql(builder.Configuration);
+
+// add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-builder.Services.AddPostgresSql(builder.Configuration);
 
 var app = builder.Build();
 
@@ -44,7 +89,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-
+app.MapPrometheusScrapingEndpoint();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
