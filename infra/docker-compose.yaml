@@ -8,11 +8,14 @@ volumes:
   pgsql:
   pgsql_dumps:
   app:
+  prometheus:
 
 services:
+  # applications containers
   application:
     image: "${APP_IMAGE?error}"
     container_name: "${PREFIX?error}app"
+    restart: unless-stopped
     env_file:
       - ./env/${APP_NAME}/${APP_NAME}.env
       - ./env/${APP_NAME}/${APP_NAME}.override.env
@@ -26,9 +29,11 @@ services:
     networks:
       - stack
 
+  # reverse proxy
   traefik:
     image: "traefik:v3.2"
     container_name: "${PREFIX?error}traefik"
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
@@ -38,9 +43,11 @@ services:
     networks:
       - stack
 
+  # logging containers
   loki:
     image: grafana/loki:3.3.2
     container_name: "${PREFIX?error}loki"
+    restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
     user: root
     volumes:
@@ -52,6 +59,7 @@ services:
   promtail:
     image: grafana/promtail:2.9.2
     container_name: "${PREFIX?error}promtail"
+    restart: unless-stopped
     depends_on:
       - loki
     volumes:
@@ -65,9 +73,11 @@ services:
     networks:
       - stack
 
+  # data visualization containers
   grafana:
     image: grafana/grafana:11.4.0
     container_name: "${PREFIX?error}grafana"
+    restart: unless-stopped
     depends_on:
       - loki
     environment:
@@ -79,15 +89,17 @@ services:
       - -euc
       - /run.sh
     volumes:
-      - ./config/grafana/ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml:ro
+      - ./config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml:ro
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
     networks:
       - stack
 
+  # databases containers
   pgsql:
     image: postgres:17-alpine
     container_name: "${PREFIX?error}pgsql"
+    restart: unless-stopped
     command: postgres -c logging_collector=on -c log_directory=pg_log -c log_statement=all
     labels:
       - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
@@ -106,10 +118,11 @@ services:
     networks:
       - stack
   
+  # backup containers
   offen:
     image: offen/docker-volume-backup:v2.43.0
     container_name: "${PREFIX?error}offen"
-    restart: always
+    restart: unless-stopped
     depends_on:
       - pgsql
       - grafana
@@ -133,6 +146,35 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - stack
+
+  # metrics containers
+  pgqsl_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.11.1
+    container_name: "${PREFIX?error}pgsql_exporter"
+    restart: unless-stopped
+    env_file:
+      - ./env/pgqsl_exporter/exporter.env
+      - ./env/pgqsl_exporter/exporter.override.env
+    networks:
+      - stack
   
-  # add CAdvisor
-  # add Zabbix
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: "${PREFIX?error}prometheus"
+    restart: unless-stopped
+    command:
+      - '--storage.tsdb.path=/prometheus'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      # should be enable only if direct access is needed to the web UI
+      # this will break the data source connection in grafana
+      # - '--web.external-url=/prometheus/'
+      # - '--web.route-prefix=/prometheus/'
+    volumes:
+      # configuration
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # data persitence
+      - prometheus:/prometheus:rw
+    networks:
+      - stack

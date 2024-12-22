@@ -1,0 +1,15 @@
+# exists only if direct access is needed to prometheus web UI
+# use grafana to access the data instead
+# http:
+#   routers:
+#     prometheusRouter:
+#       entryPoints:
+#         - web
+#       rule: "PathPrefix(`/prometheus`)"
+#       service: prometheusService
+
+#   services:
+#     prometheusService:
+#       loadBalancer:
+#         servers:
+#           - url: "http://prometheus:9090"
