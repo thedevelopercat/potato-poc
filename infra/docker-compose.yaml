@@ -1,6 +1,6 @@
 networks:
   stack:
-    name: ${PREFIX?error}_vnet
+    name: ${PREFIX?error}vnet
 
 volumes:
   loki:
@@ -9,6 +9,10 @@ volumes:
   pgsql_dumps:
   app:
   prometheus:
+  appLogs:
+  pgsqlLogs:
+  traefikLogs:
+  offen:
 
 services:
   # applications containers
@@ -17,7 +21,6 @@ services:
     container_name: "${PREFIX?error}app"
     restart: unless-stopped
     env_file:
-      - ./env/pgsql/pgsql.shared.env
       - ./env/${APP_NAME}/${APP_NAME}.env
       - ./env/${APP_NAME}/${APP_NAME}.override.env
     depends_on:
@@ -26,7 +29,7 @@ services:
       - traefik
       - pgsql
     volumes:
-      - ./data/${APP_NAME}/logs:/var/log/${APP_NAME}:rw
+      - appLogs:/var/log/${APP_NAME}:rw
     networks:
       - stack
 
@@ -36,11 +39,11 @@ services:
     container_name: "${PREFIX?error}traefik"
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
       - ./config/traefik/dynamic:/etc/traefik/dynamic:ro
-      - ./data/traefik/logs:/var/log/traefik:rw
+      - traefikLogs:/var/log/traefik:rw
     networks:
       - stack
 
@@ -67,9 +70,11 @@ services:
       # configuration mapping
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
       # log file(s) ingestion
-      - ./data/${APP_NAME}/logs:/var/log/${APP_NAME}:ro
-      - ./data/pgsql/logs:/var/log/pgsql:ro
-      - ./data/traefik/logs:/var/log/traefik:ro
+      - appLogs:/var/log/${APP_NAME}:ro
+      # - ./data/pgsql/logs:/var/log/pgsql:ro
+      # - ./data/traefik/logs:/var/log/traefik:ro
+      - traefikLogs:/var/log/traefik:ro
+      - pgsqlLogs:/var/log/traefik:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
       - stack
@@ -107,13 +112,13 @@ services:
       - docker-volume-backup.exec-label=pgsql_database
     env_file:
       - ./env/pgsql/pgsql.env
-      - ./env/pgsql/pgsql.shared.env
+      - ./env/pgsql/pgsql.override.env
     volumes:
       # data persistence
       - pgsql:/var/lib/postgresql/data
       - pgsql_dumps:/tmp/pgsql_dumps
       # logs
-      - ./data/pgsql/logs:/var/lib/postgresql/data/pg_log:rw
+      - pgsqlLogs:/var/lib/postgresql/data/pg_log:rw
       # scripts
       - ./config/pgsql/scripts:/tmp/scripts:ro
     networks:
@@ -140,7 +145,7 @@ services:
       - app:/backup/app:ro
       # configuration
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./data/offen/backup:/archive:rw
+      - offen:/archive:rw
       - ./config/offen:/etc/dockervolumebackup/conf.d:ro
       # timezone
       - /etc/timezone:/etc/timezone:ro
