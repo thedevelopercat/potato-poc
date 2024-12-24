@@ -7,12 +7,11 @@ volumes:
   grafana:
   pgsql:
   pgsql_dumps:
-  app:
+  backups:
   prometheus:
-  appLogs:
-  pgsqlLogs:
-  traefikLogs:
   offen:
+  appLogs:
+  traefikLogs:
 
 services:
   # applications containers
@@ -71,10 +70,12 @@ services:
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
       # log file(s) ingestion
       - appLogs:/var/log/${APP_NAME}:ro
-      # - ./data/pgsql/logs:/var/log/pgsql:ro
-      # - ./data/traefik/logs:/var/log/traefik:ro
       - traefikLogs:/var/log/traefik:ro
-      - pgsqlLogs:/var/log/traefik:ro
+      - type: volume
+        source: pgsql
+        volume:
+          subpath: ./pgdata/pg_log
+        target: /var/log/pgsql
     command: -config.file=/etc/promtail/config.yml
     networks:
       - stack
@@ -106,19 +107,19 @@ services:
     image: postgres:17-alpine
     container_name: "${PREFIX?error}pgsql"
     restart: unless-stopped
-    command: postgres -c logging_collector=on -c log_directory=pg_log -c log_statement=all
+    command: postgres -c logging_collector=on -c log_statement=all -c log_directory=pg_log
     labels:
       - docker-volume-backup.archive-pre=/bin/sh /tmp/scripts/backup.sh
       - docker-volume-backup.exec-label=pgsql_database
     env_file:
       - ./env/pgsql/pgsql.env
       - ./env/pgsql/pgsql.override.env
+    ports:
+      - 5432:5432
     volumes:
       # data persistence
-      - pgsql:/var/lib/postgresql/data
-      - pgsql_dumps:/tmp/pgsql_dumps
-      # logs
-      - pgsqlLogs:/var/lib/postgresql/data/pg_log:rw
+      - pgsql:/var/lib/postgresql/data:rw
+      - pgsql_dumps:/tmp/pgsql_dumps:rw
       # scripts
       - ./config/pgsql/scripts:/tmp/scripts:ro
     networks:
@@ -142,7 +143,7 @@ services:
       - pgsql_dumps:/backup/pgsql_dumps:ro
       - grafana:/backup/grafana:ro
       - loki:/backup/loki:ro
-      - app:/backup/app:ro
+      - backups:/backup/app:ro
       # configuration
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - offen:/archive:rw
