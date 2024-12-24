@@ -10,7 +10,6 @@ volumes:
   backups:
   prometheus:
   offen:
-  appLogs:
   traefikLogs:
 
 services:
@@ -27,8 +26,6 @@ services:
       - promtail
       - traefik
       - pgsql
-    volumes:
-      - appLogs:/var/log/${APP_NAME}:rw
     networks:
       - stack
 
@@ -69,7 +66,6 @@ services:
       # configuration mapping
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
       # log file(s) ingestion
-      - appLogs:/var/log/${APP_NAME}:ro
       - traefikLogs:/var/log/traefik:ro
       - type: volume
         source: pgsql
