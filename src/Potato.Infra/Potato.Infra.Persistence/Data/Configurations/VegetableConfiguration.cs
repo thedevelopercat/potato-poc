@@ -14,8 +14,8 @@ namespace Potato.Infra.Persistence.Data.Configurations
                 .HasMaxLength(64)
                 .IsRequired();
 
-            builder.HasIndex(p => p.Name).IsUnique().HasDatabaseName("UK_Vegetable_Name");
-            builder.HasIndex(p => p.Name).HasDatabaseName("IX_Vegetable_Name");
+            builder.HasIndex(p => p.Name).IsUnique().HasDatabaseName("vegetables_unique_name");
+            builder.HasIndex(p => p.Name).HasDatabaseName("idx_vegetables_name");
 
             builder.ToTable("vegetable");
         }
