@@ -11,7 +11,7 @@
 
         }
 
-        internal static Vegetable Create(string name)
+        public static Vegetable Create(string name)
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
 

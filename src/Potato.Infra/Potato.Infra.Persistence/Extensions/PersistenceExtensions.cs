@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Potato.Domain.Services.Abstractions;
 using Potato.Infra.Persistence.Data;
+using Potato.Infra.Persistence.Repositories;
 
 namespace Potato.Infra.Persistence.Extensions
 {
@@ -12,6 +14,9 @@ namespace Potato.Infra.Persistence.Extensions
             var connectionString = configuration.GetConnectionString("VegetablesDb");
 
             ArgumentException.ThrowIfNullOrEmpty(connectionString);
+
+            services.AddScoped<IVegetableRepository, VegetablesRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services.AddDbContext<VegetablesContext>(builder =>
             {

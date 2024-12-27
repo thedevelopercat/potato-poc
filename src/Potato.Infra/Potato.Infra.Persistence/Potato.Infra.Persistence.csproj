@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Potato.Application\Potato.Application.Services\Potato.Application.Services.csproj" />
     <ProjectReference Include="..\..\Potato.Domain\Potato.Domain.csproj" />
   </ItemGroup>
 
