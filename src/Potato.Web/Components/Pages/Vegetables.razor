@@ -1,0 +1,14 @@
+﻿@page "/vegetables"
+@using Potato.Web.Components.Pages.Controls
+@inherits Potato.Web.Components.Shared.CustomComponent
+
+<AddVegetableControl></AddVegetableControl>
+
+<h3>Existing vegetables</h3>
+
+<div class="container">
+    @foreach (var vegetable in Model.Vegetables)
+    {
+        <li>@vegetable.Name</li>
+    }
+</div>

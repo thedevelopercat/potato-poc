@@ -1,0 +1,13 @@
+﻿@inherits Potato.Web.Components.Shared.CustomComponent
+
+<div class="container">
+    <EditForm Model="@Model" OnValidSubmit=@PlantAsync>
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="Name">Name</label>
+            <InputText @bind-Value=Model.Name class="form-control" id="Name" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Plant</button>
+    </EditForm>
+</div>
