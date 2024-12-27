@@ -62,6 +62,8 @@ services:
     restart: unless-stopped
     depends_on:
       - loki
+      - pgsql
+      - traefik
     volumes:
       # configuration mapping
       - ./config/promtail/config.yaml:/etc/promtail/config.yml:ro
