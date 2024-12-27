@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Infra.Persistence", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Domain", "src\Potato.Domain\Potato.Domain.csproj", "{B0895A6C-7D86-4D25-82D4-82A6DD58EA18}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Potato.Application", "Potato.Application", "{D20E4A24-387A-413E-A85D-8BE4D887388A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Application.Services", "src\Potato.Application\Potato.Application.Services\Potato.Application.Services.csproj", "{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,10 @@ Global
 		{B0895A6C-7D86-4D25-82D4-82A6DD58EA18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0895A6C-7D86-4D25-82D4-82A6DD58EA18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0895A6C-7D86-4D25-82D4-82A6DD58EA18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +58,7 @@ Global
 		{BEB4887B-9325-466A-8DA9-2404DF3E9EFF} = {472E1BB7-838D-4DF0-8B3D-B01E83545DEE}
 		{1B63B7B4-0487-470B-A3DA-5F1AB497A569} = {BEB4887B-9325-466A-8DA9-2404DF3E9EFF}
 		{B0895A6C-7D86-4D25-82D4-82A6DD58EA18} = {472E1BB7-838D-4DF0-8B3D-B01E83545DEE}
+		{D20E4A24-387A-413E-A85D-8BE4D887388A} = {472E1BB7-838D-4DF0-8B3D-B01E83545DEE}
+		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5} = {D20E4A24-387A-413E-A85D-8BE4D887388A}
 	EndGlobalSection
 EndGlobal

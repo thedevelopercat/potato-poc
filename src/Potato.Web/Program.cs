@@ -5,6 +5,7 @@ using OpenTelemetry.Trace;
 using Potato.Infra.Persistence.Extensions;
 using Potato.Web.Components;
 using Serilog;
+using Potato.Application.Services.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,10 +34,8 @@ otel.ConfigureResource(resource => resource
 // Add Metrics for ASP.NET Core and our custom metrics and export to Prometheus
 otel.WithMetrics(metrics => metrics
     // Metrics provider from OpenTelemetry
-    .AddConsoleExporter()
     .AddAspNetCoreInstrumentation()
     .AddHttpClientInstrumentation()
-    .AddAspNetCoreInstrumentation()
     .AddPrometheusExporter()
 );
 
@@ -54,10 +53,6 @@ otel.WithTracing(tracing =>
             otlpOptions.Endpoint = new Uri(tracingOtlpEndpoint);
         });
     }
-    else
-    {
-        tracing.AddConsoleExporter();
-    }
 });
 
 // reverse proxy awareness
@@ -71,7 +66,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddPostgresSql(builder.Configuration);
 
 // add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddServices()
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
