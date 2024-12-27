@@ -8,11 +8,15 @@ namespace Potato.Infra.Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Vegetable> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.Property(p => p.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id");
+            builder.HasKey(p => p.Id).HasName("vegetables_primary_key");
 
             builder.Property(p => p.Name)
                 .HasMaxLength(64)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnName("name");
 
             builder.HasIndex(p => p.Name).IsUnique().HasDatabaseName("vegetables_unique_name");
             builder.HasIndex(p => p.Name).HasDatabaseName("idx_vegetables_name");
