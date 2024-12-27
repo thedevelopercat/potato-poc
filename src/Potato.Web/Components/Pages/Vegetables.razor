@@ -1,17 +1,14 @@
 ﻿@page "/vegetables"
+@using Potato.Web.Components.Pages.Controls
 @inherits Potato.Web.Components.Shared.CustomComponent
 
-<h3>Vegetable</h3>
+<AddVegetableControl></AddVegetableControl>
 
+<h3>Existing vegetables</h3>
 
 <div class="container">
-    <EditForm Model="@Model" OnValidSubmit=@PlantAsync>
-        <DataAnnotationsValidator />
-        <div class="form-group">
-            <label for="Name">Name</label>
-            <InputText @bind-Value=Model.Name class="form-control" id="Name" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Plant</button>
-    </EditForm>
+    @foreach (var vegetable in Model.Vegetables)
+    {
+        <li>@vegetable.Name</li>
+    }
 </div>

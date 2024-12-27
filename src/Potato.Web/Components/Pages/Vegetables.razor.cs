@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Components;
-using Potato.Domain.Models;
+﻿using Microsoft.AspNetCore.Components;
+using Potato.Application.Models.ViewModels;
 using Potato.Domain.Services.Abstractions;
 using Potato.Web.Components.Shared;
 
@@ -8,26 +7,24 @@ namespace Potato.Web.Components.Pages
 {
     public partial class Vegetables : CustomComponent
     {
-        public VegetablesViewModel Model { get; set; } = new();
+        protected VegetablesListViewModel Model { get; set; } = new();
 
         [Inject] public required IServiceScopeFactory ServiceScopeFactory { get; set; }
 
-        protected async Task PlantAsync()
+        protected override async Task OnInitializedAsync()
         {
             var scope = ServiceScopeFactory.CreateAsyncScope();
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var repository = scope.ServiceProvider.GetRequiredService<IVegetableRepository>();
 
-            var vegetable = Vegetable.Create(Model.Name);
-
-            await unitOfWork.VegetablesRepository.AddAsync(vegetable, CancellationToken);
-            await unitOfWork.SaveChangesAsync(CancellationToken);
+            var vegetables = await repository.GetAsync(_ => true, CancellationToken);
+            Model = new VegetablesListViewModel
+            {
+                Vegetables = vegetables.Select(x => new VegetableViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                })
+            };
         }
-    }
-
-    public sealed class VegetablesViewModel
-    {
-        [Required]
-        [Range(1, 64)]
-        public string Name { get; set; } = null!;
     }
 }
