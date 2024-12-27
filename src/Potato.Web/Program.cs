@@ -6,6 +6,7 @@ using Potato.Infra.Persistence.Extensions;
 using Potato.Web.Components;
 using Serilog;
 using Potato.Application.Services.Extensions;
+using Potato.Application.Validation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +69,7 @@ builder.Services.AddPostgresSql(builder.Configuration);
 // add services to the container.
 builder.Services
     .AddServices()
+    .AddValidation()
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 

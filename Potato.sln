@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Potato.Application", "Potat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Application.Services", "src\Potato.Application\Potato.Application.Services\Potato.Application.Services.csproj", "{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Application.Validation", "src\Potato.Application\Potato.Application.Validation\Potato.Application.Validation.csproj", "{FB145865-0885-4D4F-A7FF-4AAABE88F180}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Potato.Application.Models", "src\Potato.Application\Potato.Application.Models\Potato.Application.Models.csproj", "{C6AEFE29-1608-4DF5-B206-426FDFBA5964}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,14 @@ Global
 		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB145865-0885-4D4F-A7FF-4AAABE88F180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB145865-0885-4D4F-A7FF-4AAABE88F180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB145865-0885-4D4F-A7FF-4AAABE88F180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB145865-0885-4D4F-A7FF-4AAABE88F180}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6AEFE29-1608-4DF5-B206-426FDFBA5964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6AEFE29-1608-4DF5-B206-426FDFBA5964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6AEFE29-1608-4DF5-B206-426FDFBA5964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6AEFE29-1608-4DF5-B206-426FDFBA5964}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +72,7 @@ Global
 		{B0895A6C-7D86-4D25-82D4-82A6DD58EA18} = {472E1BB7-838D-4DF0-8B3D-B01E83545DEE}
 		{D20E4A24-387A-413E-A85D-8BE4D887388A} = {472E1BB7-838D-4DF0-8B3D-B01E83545DEE}
 		{9C1D197E-220F-430B-AF8B-2B9ECAC363D5} = {D20E4A24-387A-413E-A85D-8BE4D887388A}
+		{FB145865-0885-4D4F-A7FF-4AAABE88F180} = {D20E4A24-387A-413E-A85D-8BE4D887388A}
+		{C6AEFE29-1608-4DF5-B206-426FDFBA5964} = {D20E4A24-387A-413E-A85D-8BE4D887388A}
 	EndGlobalSection
 EndGlobal

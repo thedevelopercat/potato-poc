@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Potato.Application\Potato.Application.Validation\Potato.Application.Validation.csproj" />
     <ProjectReference Include="..\Potato.Infra\Potato.Infra.Persistence\Potato.Infra.Persistence.csproj" />
   </ItemGroup>
 
